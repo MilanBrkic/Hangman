@@ -3,6 +3,8 @@ from pygame.locals import *
 from pygame.draw import *
 import sys, requests, json
 
+colors = {"Orange":(229,198,84), "Black":(0,0,0), "Red":(255,0,0) }
+
 
 # fetching list of words 
 def fetchWords(lista):
@@ -48,59 +50,70 @@ def startGame(lista):
     fontP1 = pg.font.Font(None,25)
     fontInput = pg.font.Font(None,35)
     fontWarning = pg.font.Font(None, 20)
-    screen.fill(background)
+    screen.fill(colors["Orange"])
 
 
 
     pg.display.flip() 
     player1_text =''
     warning = ''
-    def putObjects():
-        screen.fill(background)
-        message_to_screen("Welcome to Hangman", black,screen,font,[230,150])
-        message_to_screen("Player 1 enter word: ", black,screen,fontP1,[315,220]) 
-        pg.draw.rect(screen, black, (150,270,500,50), 2)
-        message_to_screen(player1_text, black,screen,fontInput,[152,285])
-        message_to_screen(warning, red,screen,fontWarning,[152,250])
+    def putObjectsMenu():
+        screen.fill(colors["Orange"])
+        message_to_screen("Welcome to Hangman", colors["Black"],screen,font,[230,150])
+        message_to_screen("Player 1 enter word: ", colors["Black"],screen,fontP1,[315,220]) 
+        pg.draw.rect(screen, colors["Black"], (150,270,500,50), 2)
+        message_to_screen(player1_text, colors["Black"],screen,fontInput,[152,285])
+        message_to_screen(warning, colors["Red"],screen,fontWarning,[152,250])
     
     
-    putObjects()
+    putObjectsMenu()
     
     
     clock = pg.time.Clock()
-
+    startMenu = True
     while True:
         
         
         events = pg.event.get()
-        for event in events:
+        if startMenu:
             
-            if event.type == pg.QUIT:
-                pg.quit()
-                exit()
-            if event.type==pg.KEYDOWN:
-                warning = ""
-                if event.key ==pg.K_BACKSPACE:
-                    player1_text = player1_text[:-1]
-                    pg.display.update()
-                elif event.key == pg.K_SPACE:
-                    warning = "Words do not have space in them"
-                elif event.key == pg.K_KP_ENTER or event.key == pg.K_RETURN:
-                    if checkWord(lista, player1_text):
-                        warning ="postoji rec"
+            for event in events:
+                
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    exit()
+                if event.type==pg.KEYDOWN:
+                    warning = ""
+                    if event.key ==pg.K_BACKSPACE:
+                        player1_text = player1_text[:-1]
+                        pg.display.update()
+                    elif event.key == pg.K_SPACE:
+                        warning = "Words do not have space in them"
+                    elif event.key == pg.K_KP_ENTER or event.key == pg.K_RETURN:
+                        if checkWord(lista, player1_text):
+                            startMenu = False
+                            screen.fill(colors["Orange"])
+                            break
+                        else:
+                            warning = "ne postoji rec"
                     else:
-                        warning = "ne postoji rec"
-                else:
-                    if len(player1_text)>22:
-                        warning= "Cannot be longer than 22 characters"
-                    else:
-                        player1_text += event.unicode
+                        if len(player1_text)>22:
+                            warning= "Cannot be longer than 22 characters"
+                        else:
+                            player1_text += event.unicode
 
 
-                putObjects()
+                    putObjectsMenu()
+                    
+                    
+            clock.tick(30)
+        else:
+            for e in events:
+                if e.type == pg.QUIT:
+                    pg.quit()
+                    exit()
                 
-                
-        clock.tick(30)
+                    
         
 
 
