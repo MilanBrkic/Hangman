@@ -71,14 +71,15 @@ def startGame(lista):
     
     clock = pg.time.Clock()
     startMenu = True
+    displayed = False
     while True:
         
         
         events = pg.event.get()
-        if startMenu:
+        
             
-            for event in events:
-                
+        for event in events:
+            if startMenu:    
                 if event.type == pg.QUIT:
                     pg.quit()
                     exit()
@@ -92,8 +93,6 @@ def startGame(lista):
                     elif event.key == pg.K_KP_ENTER or event.key == pg.K_RETURN:
                         if checkWord(lista, player1_text):
                             startMenu = False
-                            screen.fill(colors["Orange"])
-                            break
                         else:
                             warning = "ne postoji rec"
                     else:
@@ -101,19 +100,19 @@ def startGame(lista):
                             warning= "Cannot be longer than 22 characters"
                         else:
                             player1_text += event.unicode
-
-
                     putObjectsMenu()
-                    
-                    
-            clock.tick(30)
-        else:
-            for e in events:
-                if e.type == pg.QUIT:
+            else:
+                if not displayed:
+                    screen.fill(colors['Orange'])
+                    pg.display.update()
+                    displayed = True
+                if event.type == pg.QUIT:
                     pg.quit()
                     exit()
                 
-                    
+        
+        
+        clock.tick(30)            
         
 
 
