@@ -31,6 +31,7 @@ def ponder(n):
         return 20
     else: return 10
 
+
 def crtaj(rec, screen):
     screen_width =800
     n = len(rec)
@@ -48,6 +49,33 @@ def crtaj(rec, screen):
         pg.draw.line(screen, colors['Black'], (x.coord1.x,x.coord1.y), (x.coord2.x,x.coord2.y),3)
         pg.display.update()
 
+def message_to_screen(msg,color,screen, font, dimensions):
+        screen_text = font.render(msg,True,color)
+        screen.blit(screen_text,dimensions)
+        pg.display.update()
+
+def getAlphabet():
+    alphabet = []
+    for x in range(26):
+        alphabet.append(chr(ord('A')+x))
+    return alphabet
+
+def displayButtons(screen):
+    font = pg.font.Font(None,35)
+    alphabet = getAlphabet()
+    print(len(alphabet))
+    for i in range(3):
+        width = 50
+        height = 400+i*50
+        for j in range(9):
+            if i==2 and j==8:
+                break
+            inner_width = width+65*j
+            pg.draw.rect(screen, colors['Black'], (inner_width, height, 40, 40), 2)
+            word = alphabet[i*9+j]
+            message_to_screen(word, colors['Black'], screen, font, (inner_width+10, height+10))
+
+    pg.display.update()
 
 # fetching list of words 
 def fetchWords(lista):
@@ -74,10 +102,7 @@ def checkWord(lista, word):
 
 def startGame(lista):
 
-    def message_to_screen(msg,color,screen, font, dimensions):
-        screen_text = font.render(msg,True,color)
-        screen.blit(screen_text,dimensions)
-        pg.display.update()
+    
 
     pg.init()
     background = 229,198,84
@@ -151,6 +176,7 @@ def startGame(lista):
                     screen.fill(colors['Orange'])
                     crtaj(hangman_rec, screen)
                     message_to_screen('Player 2 guess pick a letter:',colors['Black'], screen, font, (180, 200) )
+                    displayButtons(screen)
                     displayed = True
                 if event.type == pg.QUIT:
                     pg.quit()
