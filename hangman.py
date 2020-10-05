@@ -1,9 +1,52 @@
 import pygame as pg 
 from pygame.locals import *
 from pygame.draw import *
-import sys, requests, json
+import sys, requests, json,math
 
 colors = {"Orange":(229,198,84), "Black":(0,0,0), "Red":(255,0,0) }
+
+class Coordinate:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def printSelf(self):
+        print(self.x, self.y)
+
+class Line:
+    def __init__(self, coord1, coord2):
+        self.coord1 = coord1
+        self.coord2 = coord2
+
+def ponder(n):
+    if n<2:
+        return 350
+    elif n<3:
+        return 300
+    elif n<5:
+        return 250
+    elif n<10:
+        return 70
+    elif n<15:
+        return 20
+    else: return 10
+
+def crtaj(rec, screen):
+    screen_width =800
+    n = len(rec)
+    pocetni = ponder(n)
+    razmak = math.ceil((screen_width-pocetni*2)/n)
+    lista = []
+
+    
+    for x in range(len(rec)):
+        c1 = Coordinate(math.ceil(pocetni+x*razmak), 150)
+        c2 = Coordinate(math.ceil(pocetni+x*razmak+razmak*0.8), 150)
+        linija = Line(c1,c2)
+        lista.append(linija)
+    for x in lista:
+        pg.draw.line(screen, colors['Black'], (x.coord1.x,x.coord1.y), (x.coord2.x,x.coord2.y),3)
+        pg.display.update()
 
 
 # fetching list of words 
@@ -51,7 +94,7 @@ def startGame(lista):
     fontInput = pg.font.Font(None,35)
     fontWarning = pg.font.Font(None, 20)
     screen.fill(colors["Orange"])
-
+    hangman_rec = ''
 
 
     pg.display.flip() 
@@ -64,6 +107,7 @@ def startGame(lista):
         pg.draw.rect(screen, colors["Black"], (150,270,500,50), 2)
         message_to_screen(player1_text, colors["Black"],screen,fontInput,[152,285])
         message_to_screen(warning, colors["Red"],screen,fontWarning,[152,250])
+    
     
     
     putObjectsMenu()
@@ -92,6 +136,7 @@ def startGame(lista):
                         warning = "Words do not have space in them"
                     elif event.key == pg.K_KP_ENTER or event.key == pg.K_RETURN:
                         if checkWord(lista, player1_text):
+                            hangman_rec = player1_text
                             startMenu = False
                         else:
                             warning = "ne postoji rec"
@@ -104,7 +149,8 @@ def startGame(lista):
             else:
                 if not displayed:
                     screen.fill(colors['Orange'])
-                    pg.display.update()
+                    crtaj(hangman_rec, screen)
+                    message_to_screen('Player 2 guess pick a letter:',colors['Black'], screen, font, (180, 200) )
                     displayed = True
                 if event.type == pg.QUIT:
                     pg.quit()
