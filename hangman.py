@@ -2,21 +2,10 @@ import pygame as pg
 from pygame.locals import *
 from pygame.draw import *
 import sys, requests, json,math
+from classes import Line,Coordinate, WidthLimits,HeightLimits,DimensionLimits
 
 colors = {"Orange":(229,198,84), "Black":(0,0,0), "Red":(255,0,0) }
-
-class Coordinate:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    def printSelf(self):
-        print(self.x, self.y)
-
-class Line:
-    def __init__(self, coord1, coord2):
-        self.coord1 = coord1
-        self.coord2 = coord2
+dimension_list = []
 
 def ponder(n):
     if n<2:
@@ -61,9 +50,8 @@ def getAlphabet():
     return alphabet
 
 def displayButtons(screen):
-    font = pg.font.Font(None,35)
     alphabet = getAlphabet()
-    print(len(alphabet))
+    font = pg.font.Font(None,35)
     for i in range(3):
         width = 50
         height = 400+i*50
@@ -71,11 +59,16 @@ def displayButtons(screen):
             if i==2 and j==8:
                 break
             inner_width = width+65*j
-            pg.draw.rect(screen, colors['Black'], (inner_width, height, 40, 40), 2)
             word = alphabet[i*9+j]
+            
+            dimension_list.append(DimensionLimits(word,WidthLimits(inner_width,40), HeightLimits(height,40)))
+            pg.draw.rect(screen, colors['Black'], (inner_width, height, 40, 40), 2)
+            
             message_to_screen(word, colors['Black'], screen, font, (inner_width+10, height+10))
 
     pg.display.update()
+    for x in dimension_list:
+        print(str(x.syllable)+": width:"+str(x.width.lower)+"-"+str(x.width.upper)+" height:"+str(x.height.lower)+"-"+str(x.height.upper))
 
 # fetching list of words 
 def fetchWords(lista):
@@ -105,9 +98,7 @@ def startGame(lista):
     
 
     pg.init()
-    background = 229,198,84
-    black = 0,0,0
-    red = 255,0,0
+    
 
     screen_size = screen_width, screen_height = 800,600
 
@@ -181,6 +172,20 @@ def startGame(lista):
                 if event.type == pg.QUIT:
                     pg.quit()
                     exit()
+                if event.type == pg.MOUSEMOTION:
+                    x,y = pg.mouse.get_pos()
+                    usao = False
+                    for i in dimension_list:
+                        if i.width.lower<x and i.width.upper>x and i.height.lower<y and i.height.upper>y:
+                            pg.mouse.set_cursor(*pg.cursors.tri_left)
+                            usao = True
+                    if not usao:
+                        pg.mouse.set_cursor(*pg.cursors.arrow)
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    x,y = pg.mouse.get_pos()
+                    for i in dimension_list:
+                        if i.width.lower<x and i.width.upper>x and i.height.lower<y and i.height.upper>y:
+                            print(i.syllable)
                 
         
         
