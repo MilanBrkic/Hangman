@@ -67,8 +67,8 @@ def displayButtons(screen):
             message_to_screen(word, colors['Black'], screen, font, (inner_width+10, height+10))
 
     pg.display.update()
-    for x in dimension_list:
-        print(str(x.syllable)+": width:"+str(x.width.lower)+"-"+str(x.width.upper)+" height:"+str(x.height.lower)+"-"+str(x.height.upper))
+    # for x in dimension_list:
+    #     print(str(x.syllable)+": width:"+str(x.width.lower)+"-"+str(x.width.upper)+" height:"+str(x.height.lower)+"-"+str(x.height.upper))
 
 # fetching list of words 
 def fetchWords(lista):
@@ -91,6 +91,10 @@ def checkWord(lista, word):
     if word in lista:
         return True
 
+def drawAnX(s, screen):
+    pg.draw.line(screen,colors['Red'],(s.width.lower,s.height.lower), (s.width.upper,s.height.upper), 3)
+    pg.draw.line(screen,colors['Red'],(s.width.lower,s.height.upper), (s.width.upper,s.height.lower), 3)
+    pg.display.update()
 
 
 def startGame(lista):
@@ -185,7 +189,8 @@ def startGame(lista):
                     x,y = pg.mouse.get_pos()
                     for i in dimension_list:
                         if i.width.lower<x and i.width.upper>x and i.height.lower<y and i.height.upper>y:
-                            print(i.syllable)
+                            drawAnX(i, screen)
+                            dimension_list.remove(i)
                 
         
         
