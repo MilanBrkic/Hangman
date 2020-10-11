@@ -4,6 +4,7 @@ from pygame.draw import *
 import sys, requests, json,math
 from classes import Line,Coordinate, WidthLimits,HeightLimits,DimensionLimits
 
+
 colors = {"Orange":(229,198,84), "Black":(0,0,0), "Red":(255,0,0) }
 
 def ponder(n):
@@ -55,7 +56,7 @@ def displayButtons(screen, dimension_list):
     font = pg.font.Font(None,35)
     for i in range(3):
         width = 50
-        height = 400+i*50
+        height = 450+i*50
         for j in range(9):
             if i==2 and j==8:
                 break
@@ -94,15 +95,84 @@ def checkWord(lista, word):
     if word in lista:
         return True
 
-def displaySyllable(syllable, crta, screen):
-    font_slovo =  pg.font.Font(None,100)
-    message_to_screen(syllable,colors['Black'], screen,font_slovo, (crta.coord1.x+10,crta.coord1.y-60))
+
+def ponderFonta(n):
+    if n<2:
+        return 120
+    elif n<9:
+        return 100
+    elif n<15:
+        return 60
+    else: return 50
+
+def displaySyllable(syllable, crta, screen, hangman_rec):
+    p = ponderFonta(len(hangman_rec))
+    font_slovo =  pg.font.Font(None,p)
+    up = 60
+    if len(hangman_rec)>9:
+        up = 35
+    message_to_screen(syllable,colors['Black'], screen,font_slovo, (crta.coord1.x+10,crta.coord1.y-up))
 
 def moreThanTwoSylabbles(hangman_rec,lista_crta, syllable,screen):
     index = 0
     for x in hangman_rec:
         if x==syllable:
             crta = lista_crta[index]
-            displaySyllable(syllable, crta, screen)
+            displaySyllable(syllable, crta, screen, hangman_rec)
         index+=1
-            
+
+
+def horizontalLine(screen):
+    pg.draw.line(screen, colors['Black'], (510, 400), (590, 400), 3)
+
+def verticalLine(screen):
+    pg.draw.line(screen, colors['Black'], (550, 400), (550, 230), 3)
+
+def horiAndVerLine(screen):
+    pg.draw.line(screen, colors['Black'], (550, 230), (620, 230), 3)
+    pg.draw.line(screen, colors['Black'], (620, 230), (620, 250), 3)
+
+def drawHead(screen):
+    pg.draw.circle(screen, colors['Black'], (620,270), 20, 3)
+
+def drawBody(screen):
+    pg.draw.line(screen, colors['Black'], (620, 290), (620, 350), 3)
+
+def drawRightArm(screen):
+    pg.draw.line(screen, colors['Black'], (620, 300), (650, 320), 4)
+
+def drawLeftArm(screen):
+    pg.draw.line(screen, colors['Black'], (620, 300), (590, 320), 4)
+
+def drawRightLeg(screen):
+    pg.draw.line(screen, colors['Black'], (620, 350), (650, 380), 4)
+
+def drawLeftLeg(screen):
+    pg.draw.line(screen, colors['Black'], (620, 350), (590, 380), 4)
+    
+
+def drawHangman(screen,broj_gresaka):
+    kraj=False
+    if broj_gresaka==1:
+        horizontalLine(screen)
+    elif broj_gresaka==2:
+        verticalLine(screen)
+    elif broj_gresaka==3:
+        horiAndVerLine(screen)
+    elif broj_gresaka==4:
+        drawHead(screen)
+    elif broj_gresaka==5:
+        drawBody(screen)
+    elif broj_gresaka==6:
+        drawRightArm(screen)
+    elif broj_gresaka==7:
+        drawLeftArm(screen)
+    elif broj_gresaka==8:
+        drawRightLeg(screen)
+    elif broj_gresaka==9:
+        drawLeftLeg(screen)
+        message_to_screen("You LOSE!!!", colors['Red'], screen,pg.font.Font(None,65) , (50, 300))
+        kraj=True
+
+    pg.display.update()
+    return kraj

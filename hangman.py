@@ -8,7 +8,6 @@ from classes import Line,Coordinate, WidthLimits,HeightLimits,DimensionLimits
 colors = {"Orange":(229,198,84), "Black":(0,0,0), "Red":(255,0,0) }
 dimension_list = []
 
-
 def startGame(lista):
     pg.init()
     screen_size = screen_width, screen_height = 800,600
@@ -77,8 +76,9 @@ def startGame(lista):
                 if not displayed:
                     screen.fill(colors['Orange'])
                     lista_crta = crtaj(hangman_rec, screen)
-                    message_to_screen('Player 2 guess pick a letter:',colors['Black'], screen, font, (180, 200) )
+                    message_to_screen('Player 2 pick a letter:',colors['Black'], screen, font, (50, 400) )
                     displayButtons(screen, dimension_list)
+                    broj_gresaka=0
                     displayed = True
 
                 if event.type == pg.QUIT:
@@ -103,14 +103,19 @@ def startGame(lista):
                             if index>-1:
                                 if hangman_rec.count(i.syllable)==1:
                                     crta = lista_crta[index]
-                                    displaySyllable(i.syllable, crta, screen)
+                                    displaySyllable(i.syllable, crta, screen, hangman_rec)
                                 else:
                                     moreThanTwoSylabbles(hangman_rec,lista_crta, i.syllable,screen)
                                     
                             else:
-                                print("ne postoji rec")
+                                broj_gresaka+=1
+                                kraj = drawHangman(screen, broj_gresaka)
+                                if kraj:
+                                    dimension_list.clear()
+                                    
                             drawAnX(i, screen)
-                            dimension_list.remove(i)
+                            if not kraj:
+                                dimension_list.remove(i)
                 
         
         
