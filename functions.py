@@ -5,7 +5,7 @@ import sys, requests, json,math
 from classes import Line,Coordinate, WidthLimits,HeightLimits,DimensionLimits
 
 
-colors = {"Orange":(229,198,84), "Black":(0,0,0), "Red":(255,0,0) }
+colors = {"Orange":(229,198,84), "Black":(0,0,0), "Red":(255,0,0), "Blue":(0,0,255)}
 
 def ponder(n):
     if n<2:
@@ -105,20 +105,20 @@ def ponderFonta(n):
         return 60
     else: return 50
 
-def displaySyllable(syllable, crta, screen, hangman_rec):
+def displaySyllable(syllable, crta, screen, hangman_rec, color):
     p = ponderFonta(len(hangman_rec))
     font_slovo =  pg.font.Font(None,p)
     up = 60
     if len(hangman_rec)>9:
         up = 35
-    message_to_screen(syllable,colors['Black'], screen,font_slovo, (crta.coord1.x+10,crta.coord1.y-up))
+    message_to_screen(syllable,color, screen,font_slovo, (crta.coord1.x+10,crta.coord1.y-up))
 
 def moreThanTwoSylabbles(hangman_rec,lista_crta, syllable,screen):
     index = 0
     for x in hangman_rec:
         if x==syllable:
             crta = lista_crta[index]
-            displaySyllable(syllable, crta, screen, hangman_rec)
+            displaySyllable(syllable, crta, screen, hangman_rec,colors['Black'])
         index+=1
 
 
@@ -176,3 +176,35 @@ def drawHangman(screen,broj_gresaka):
 
     pg.display.update()
     return kraj
+
+def drawRest(used_syllables, hangman_rec, lista_crta,screen):
+    
+    index = 0
+    for i in hangman_rec:
+        postoji = False
+        for j in used_syllables:
+            if i == j:
+                postoji = True
+
+        if not postoji:
+            crta = lista_crta[index]
+            displaySyllable(i, crta, screen, hangman_rec, colors['Red'])
+        
+        
+        index+=1
+
+
+def isItDone(used_syllables, hangman_rec):
+    for i in hangman_rec:
+        exists = False
+        for j in used_syllables:
+            if i == j:
+                exists = True
+                break
+        if not exists:
+            return False
+    
+    return True
+
+def drawWin(screen):
+    message_to_screen("You WIN!!!", colors['Blue'], screen,pg.font.Font(None,65) , (50, 300))

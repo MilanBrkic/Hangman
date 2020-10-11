@@ -7,6 +7,8 @@ from classes import Line,Coordinate, WidthLimits,HeightLimits,DimensionLimits
 
 colors = {"Orange":(229,198,84), "Black":(0,0,0), "Red":(255,0,0) }
 dimension_list = []
+used_syllables = []
+
 
 def startGame(lista):
     pg.init()
@@ -96,26 +98,31 @@ def startGame(lista):
                         pg.mouse.set_cursor(*pg.cursors.arrow)
 
                 if event.type == pg.MOUSEBUTTONDOWN:
+                    kraj = False
                     x,y = pg.mouse.get_pos()
                     for i in dimension_list:
                         if i.width.lower<x and i.width.upper>x and i.height.lower<y and i.height.upper>y:
                             index = hangman_rec.find(i.syllable)
                             if index>-1:
+                                used_syllables.append(i.syllable)
+                                
                                 if hangman_rec.count(i.syllable)==1:
                                     crta = lista_crta[index]
-                                    displaySyllable(i.syllable, crta, screen, hangman_rec)
+                                    displaySyllable(i.syllable, crta, screen, hangman_rec,colors['Black'])
                                 else:
                                     moreThanTwoSylabbles(hangman_rec,lista_crta, i.syllable,screen)
-                                    
                             else:
                                 broj_gresaka+=1
                                 kraj = drawHangman(screen, broj_gresaka)
                                 if kraj:
                                     dimension_list.clear()
-                                    
+                                    drawRest(used_syllables,hangman_rec, lista_crta, screen)
                             drawAnX(i, screen)
                             if not kraj:
                                 dimension_list.remove(i)
+                                if isItDone(used_syllables, hangman_rec):
+                                    dimension_list.clear()
+                                    drawWin(screen)
                 
         
         
